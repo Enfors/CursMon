@@ -37,7 +37,7 @@ class UI(object):
         self.main_graph = Graph(self.scr, "loop_load", top_graph_y=0,
                                 top_graph_x=0, plot_y_size=20,
                                 plot_x_size=plot_x_size, y_step=5,
-                                mv_avg_y=12, show_y=True, bar=True)
+                                mv_avg_y=10, show_y=True, bar=True)
         self.extra_graph = Graph(self.scr, "loop_load", top_graph_y=23,
                                  top_graph_x=0, plot_y_size=10,
                                  plot_x_size=30, y_step=10)
@@ -160,7 +160,7 @@ class Graph(object):
                     while bar_y > 0:
                         self.plot(y=bar_y, x=i, char="|", color=GREEN)
                         bar_y = bar_y - 1
-            if avg_y is not y and self.show_mv_avg_y:
+            if self.show_mv_avg_y:
                 self.plot(y=avg_y, x=i, char="¤", color=BLUE)
             # self.scr.addstr(22, 0, "y: %d, data: %d\n" % (y, data[i]))
             # self.scr.getch()
