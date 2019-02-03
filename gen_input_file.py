@@ -14,8 +14,8 @@ top = 100
 bot = 0
 direction = 0
 
-while num < 200:
-    steady = random.randint(2, 5)
+while num < 70:
+    steady = random.randint(5, 9)
 
     while steady > 0:
         val = val + direction * 5
@@ -25,8 +25,8 @@ while num < 200:
             val = bot
         print(val)
         sys.stdout.flush()
-        time.sleep(0.2)
+        # time.sleep(0.2)
         steady = steady - 1
+        num = num + 1
 
     direction = random.randint(-1, 1)
-    num = num + 1
