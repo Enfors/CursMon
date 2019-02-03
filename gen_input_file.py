@@ -5,6 +5,7 @@ Generate a simple input file.
 """
 
 import random
+import sys
 import time
 
 num = 0
@@ -23,7 +24,8 @@ while num < 200:
         if val < bot:
             val = bot
         print(val)
-        # time.sleep(1)
+        sys.stdout.flush()
+        time.sleep(0.2)
         steady = steady - 1
 
     direction = random.randint(-1, 1)

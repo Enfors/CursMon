@@ -31,19 +31,37 @@ class UI(object):
         self.scr = scr
         self.scr.clear()
 
-        plot_x_size = self.cols - 5 - (self.cols % 5)
+        # plot_x_size = self.cols - 5 - (self.cols % 5)
+        plot_x_size = 70
 
         self.main_graph = Graph(self.scr, "loop_load", top_graph_y=0,
                                 top_graph_x=0, plot_y_size=20,
                                 plot_x_size=plot_x_size, y_step=5)
+        self.extra_graph = Graph(self.scr, "extra_graph", top_graph_y=23,
+                                 top_graph_x=0, plot_y_size=10,
+                                 plot_x_size=30, y_step=10)
+        self.third_graph = Graph(self.scr, "third_graph", top_graph_y=23,
+                                 top_graph_x=40, plot_y_size=10,
+                                 plot_x_size=30, y_step=10)
+        self.fourth_graph = Graph(self.scr, "fourth_graph", top_graph_y=36,
+                                  top_graph_x=0, plot_y_size=10,
+                                  plot_x_size=30, y_step=10)
+        self.fifth_graph = Graph(self.scr, "fifth_graph", top_graph_y=36,
+                                 top_graph_x=40, plot_y_size=10,
+                                 plot_x_size=30, y_step=10)
         self.scr.refresh()
 
     def refresh(self):
         self.scr.refresh()
 
     def display_graph(self, data):
+        data2 = [30] * 30
         self.main_graph.display(data)
-
+        self.extra_graph.display(data)
+        self.third_graph.display(data2)
+        self.fourth_graph.display(data)
+        self.fifth_graph.display(data2)
+                
     def wait_for_input_char(self):
         return self.scr.getch()
 
@@ -64,7 +82,8 @@ class Graph(object):
         self.y_step = y_step
 
         self.plot_win = curses.newwin(plot_y_size, plot_x_size + 1,
-                                      self.top_margin, self.left_margin)
+                                      self.top_margin + self.top_graph_y,
+                                      self.left_margin + self.top_graph_x)
         assert curses.has_colors()
 
     def display(self, data):
@@ -76,27 +95,24 @@ class Graph(object):
         self.draw_grid()
         self.plot_data(data)
         self.plot_win.refresh()
+        self.scr.refresh()
 
     def draw_title(self):
-        x = int(((self.plot_x_size - len(self.title)) / 2) + self.left_margin)
+        x = int(((self.plot_x_size - len(self.title)) / 2) + self.left_margin +
+                self.top_graph_x)
 
-        self.scr.addstr(self.top_graph_y, x, self.title)
+        self.scr.addstr(self.top_graph_y, x, self.title,
+                        curses.color_pair(WHITE))
 
-        extra_space = x - self.left_margin
-
-        """
-        ====[ loopload ]====
-        +---++---++---++---+
-        x = 6
-        """
+        extra_space = x - self.left_margin - self.top_graph_x
 
         if extra_space < 3:
             return
 
         left = "=" * (extra_space - 2) + "["
 
-        self.scr.addstr(self.top_graph_y, self.left_margin, left,
-                        curses.color_pair(MAGENTA))
+        self.scr.addstr(self.top_graph_y, self.left_margin + self.top_graph_x,
+                        left, curses.color_pair(MAGENTA))
         right_x = self.plot_x_size - extra_space + self.left_margin
 
         if (len(self.title) + self.plot_x_size) % 2 == 0:
@@ -105,7 +121,8 @@ class Graph(object):
             rounding = 1
         right = " ]" + "=" * (extra_space - 2 + rounding)
 
-        self.scr.addstr(self.top_graph_y, right_x - rounding,
+        self.scr.addstr(self.top_graph_y,
+                        right_x - rounding + self.top_graph_x,
                         right, curses.color_pair(MAGENTA))
 
     def plot_data(self, data):
@@ -130,17 +147,17 @@ class Graph(object):
         y = 5
 
         while y <= self.plot_y_size:
-            x = 5
+            x = 10
 
             while x <= self.plot_x_size:
                 self.plot(y, x - 1, "+")
-                x = x + 5
+                x = x + 10
             y = y + 5
 
     def draw_y_axis(self):
         for row in range(1, self.plot_y_size + 1):
-            y = self.plot_y_size - row + self.top_margin
-            x = self.left_margin - 4
+            y = self.plot_y_size - row + self.top_margin + self.top_graph_y
+            x = self.left_margin - 4 + self.top_graph_x
 
             if row == self.plot_y_size:
                 char = "^"
@@ -151,14 +168,14 @@ class Graph(object):
                     char = "|"
 
             self.scr.addstr(y, x, "%3d" % (row * self.y_step),
-                            curses.color_pair(CYAN))
+                            curses.color_pair(WHITE))
             self.scr.addstr(y, x + 3, "%s" % char,
                             curses.color_pair(MAGENTA))
 
     def draw_x_axis(self):
         for col in range(0, self.plot_x_size + 1):
-            x = col + self.left_margin - 1
-            y = self.plot_y_size + self.top_margin
+            y = self.plot_y_size + self.top_margin + self.top_graph_y
+            x = col + self.left_margin - 1 + self.top_graph_x
 
             if col == self.plot_x_size:
                 char = ">"
