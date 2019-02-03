@@ -36,7 +36,8 @@ class UI(object):
 
         self.main_graph = Graph(self.scr, "loop_load", top_graph_y=0,
                                 top_graph_x=0, plot_y_size=20,
-                                plot_x_size=plot_x_size, y_step=5)
+                                plot_x_size=plot_x_size, y_step=5,
+                                mv_avg_y=7, show_y=True)
         self.extra_graph = Graph(self.scr, "extra_graph", top_graph_y=23,
                                  top_graph_x=0, plot_y_size=10,
                                  plot_x_size=30, y_step=10)
@@ -61,14 +62,15 @@ class UI(object):
         self.third_graph.display(data2)
         self.fourth_graph.display(data)
         self.fifth_graph.display(data2)
-                
+
     def wait_for_input_char(self):
         return self.scr.getch()
 
 
 class Graph(object):
     def __init__(self, scr, title, top_graph_y=0, top_graph_x=0,
-                 plot_y_size=10, plot_x_size=10, y_step=1):
+                 plot_y_size=10, plot_x_size=10, y_step=1, mv_avg_y=1,
+                 show_y=True, show_mv_avg_y=True):
         self.title = title
         self.scr = scr
         self.left_margin = 5
@@ -80,6 +82,9 @@ class Graph(object):
         self.plot_y_size = plot_y_size
         self.plot_x_size = plot_x_size
         self.y_step = y_step
+        self.mv_avg_y = mv_avg_y
+        self.show_y = show_y
+        self.show_mv_avg_y = show_mv_avg_y
 
         self.plot_win = curses.newwin(plot_y_size, plot_x_size + 1,
                                       self.top_margin + self.top_graph_y,
@@ -98,10 +103,15 @@ class Graph(object):
         self.scr.refresh()
 
     def draw_title(self):
-        x = int(((self.plot_x_size - len(self.title)) / 2) + self.left_margin +
+        title = self.title
+
+        # if self.mv_avg_y is not 1 and self.show_mv_avg_y:
+        #     title = title + " (avg: %d)" % self.mv_avg_y
+
+        x = int(((self.plot_x_size - len(title)) / 2) + self.left_margin +
                 self.top_graph_x)
 
-        self.scr.addstr(self.top_graph_y, x, self.title,
+        self.scr.addstr(self.top_graph_y, x, title,
                         curses.color_pair(WHITE))
 
         extra_space = x - self.left_margin - self.top_graph_x
@@ -113,13 +123,13 @@ class Graph(object):
 
         self.scr.addstr(self.top_graph_y, self.left_margin + self.top_graph_x,
                         left, curses.color_pair(MAGENTA))
-        right_x = self.plot_x_size - extra_space + self.left_margin
 
         if (len(self.title) + self.plot_x_size) % 2 == 0:
             rounding = 0
         else:
             rounding = 1
-        right = " ]" + "=" * (extra_space - 2 + rounding)
+        right_x = self.plot_x_size - extra_space + self.left_margin + 1
+        right = "]" + "=" * (extra_space - 2 + rounding)
 
         self.scr.addstr(self.top_graph_y,
                         right_x - rounding + self.top_graph_x,
@@ -133,13 +143,20 @@ class Graph(object):
             plot_data = data
 
         for i in range(0, len(plot_data)):
-            # self.scr.addstr(21, 0, "      data: %d\n" % (data[i]))
-            if plot_data[i] > 0:
-                y = int((plot_data[i] + self.y_step / 2) / self.y_step)
-            else:
-                y = 0
+            y = plot_data[i]
 
-            self.plot(y=y, x=i, char="*", color=GREEN)
+            if self.mv_avg_y == 1:
+                avg_y = y
+            else:
+                avg_y = self.calc_mv_avg_y(i, plot_data)
+
+            y = self.round_y(y)
+            avg_y = self.round_y(avg_y)
+
+            if avg_y is not y and self.show_mv_avg_y:
+                self.plot(y=avg_y, x=i, char="¤", color=BLUE)
+            if self.show_y:
+                self.plot(y=y, x=i, char="*", color=GREEN)
             # self.scr.addstr(22, 0, "y: %d, data: %d\n" % (y, data[i]))
             # self.scr.getch()
 
@@ -192,7 +209,6 @@ class Graph(object):
 
     def plot(self, y: int, x: int, char: str, color: int=0):
         # self.scr.addstr("y: %d, x: %d\n" % (y, x))
-        data = y
         y = self.plot_y_size - y
 
         if y < 0:
@@ -209,3 +225,27 @@ class Graph(object):
 
         self.plot_win.addstr(y, x, char, curses.color_pair(color))
         self.plot_win.refresh()
+
+    def calc_mv_avg_y(self, index, data):
+        if self.mv_avg_y == 1:
+            return data[index]
+
+        if index < (self.mv_avg_y - 1):
+            min_point = 0
+        else:
+            min_point = index - self.mv_avg_y + 1
+
+        max_point = index + 1
+
+        data_subset = data[min_point:max_point]
+        avg = sum(data_subset) / len(data_subset)
+
+        return avg
+
+    def round_y(self, y):
+        if y > 0:
+            y = int((y + self.y_step / 2) / self.y_step)
+        else:
+            y = 0
+
+        return y
