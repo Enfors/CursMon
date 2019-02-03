@@ -37,7 +37,7 @@ class UI(object):
         self.main_graph = Graph(self.scr, "loop_load", top_graph_y=0,
                                 top_graph_x=0, plot_y_size=20,
                                 plot_x_size=plot_x_size, y_step=5,
-                                mv_avg_y=7, show_y=True)
+                                mv_avg_y=10, show_y=True, bar=True)
         self.extra_graph = Graph(self.scr, "extra_graph", top_graph_y=23,
                                  top_graph_x=0, plot_y_size=10,
                                  plot_x_size=30, y_step=10)
@@ -70,7 +70,7 @@ class UI(object):
 class Graph(object):
     def __init__(self, scr, title, top_graph_y=0, top_graph_x=0,
                  plot_y_size=10, plot_x_size=10, y_step=1, mv_avg_y=1,
-                 show_y=True, show_mv_avg_y=True):
+                 show_y=True, show_mv_avg_y=True, bar=False):
         self.title = title
         self.scr = scr
         self.left_margin = 5
@@ -85,6 +85,7 @@ class Graph(object):
         self.mv_avg_y = mv_avg_y
         self.show_y = show_y
         self.show_mv_avg_y = show_mv_avg_y
+        self.bar = bar
 
         self.plot_win = curses.newwin(plot_y_size, plot_x_size + 1,
                                       self.top_margin + self.top_graph_y,
@@ -153,10 +154,15 @@ class Graph(object):
             y = self.round_y(y)
             avg_y = self.round_y(avg_y)
 
-            if avg_y is not y and self.show_mv_avg_y:
-                self.plot(y=avg_y, x=i, char="¤", color=BLUE)
             if self.show_y:
                 self.plot(y=y, x=i, char="*", color=GREEN)
+                if self.bar:
+                    bar_y = y - 1
+                    while bar_y > 0:
+                        self.plot(y=bar_y, x=i, char="|", color=GREEN)
+                        bar_y = bar_y - 1
+            if avg_y is not y and self.show_mv_avg_y:
+                self.plot(y=avg_y, x=i, char="¤", color=BLUE)
             # self.scr.addstr(22, 0, "y: %d, data: %d\n" % (y, data[i]))
             # self.scr.getch()
 
