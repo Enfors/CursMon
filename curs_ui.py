@@ -37,17 +37,17 @@ class UI(object):
         self.main_graph = Graph(self.scr, "loop_load", top_graph_y=0,
                                 top_graph_x=0, plot_y_size=20,
                                 plot_x_size=plot_x_size, y_step=5,
-                                mv_avg_y=10, show_y=True, bar=True)
-        self.extra_graph = Graph(self.scr, "extra_graph", top_graph_y=23,
+                                mv_avg_y=12, show_y=True, bar=True)
+        self.extra_graph = Graph(self.scr, "loop_load", top_graph_y=23,
                                  top_graph_x=0, plot_y_size=10,
                                  plot_x_size=30, y_step=10)
-        self.third_graph = Graph(self.scr, "third_graph", top_graph_y=23,
+        self.third_graph = Graph(self.scr, "loop_load", top_graph_y=23,
                                  top_graph_x=40, plot_y_size=10,
                                  plot_x_size=30, y_step=10)
-        self.fourth_graph = Graph(self.scr, "fourth_graph", top_graph_y=36,
+        self.fourth_graph = Graph(self.scr, "loop_load", top_graph_y=36,
                                   top_graph_x=0, plot_y_size=10,
                                   plot_x_size=30, y_step=10)
-        self.fifth_graph = Graph(self.scr, "fifth_graph", top_graph_y=36,
+        self.fifth_graph = Graph(self.scr, "loop_load", top_graph_y=36,
                                  top_graph_x=40, plot_y_size=10,
                                  plot_x_size=30, y_step=10)
         self.scr.refresh()
@@ -56,12 +56,11 @@ class UI(object):
         self.scr.refresh()
 
     def display_graph(self, data):
-        data2 = [30] * 30
         self.main_graph.display(data)
         self.extra_graph.display(data)
-        self.third_graph.display(data2)
+        self.third_graph.display(data)
         self.fourth_graph.display(data)
-        self.fifth_graph.display(data2)
+        self.fifth_graph.display(data)
 
     def wait_for_input_char(self):
         return self.scr.getch()
@@ -144,7 +143,7 @@ class Graph(object):
             plot_data = data
 
         for i in range(0, len(plot_data)):
-            y = plot_data[i]
+            y = int(plot_data[i][self.title])
 
             if self.mv_avg_y == 1:
                 avg_y = y
@@ -234,7 +233,7 @@ class Graph(object):
 
     def calc_mv_avg_y(self, index, data):
         if self.mv_avg_y == 1:
-            return data[index]
+            return int(data[index][self.title])
 
         if index < (self.mv_avg_y - 1):
             min_point = 0
@@ -243,7 +242,10 @@ class Graph(object):
 
         max_point = index + 1
 
-        data_subset = data[min_point:max_point]
+        # data_subset = data[min_point:max_point]
+        data_subset = []
+        for row in data[min_point:max_point]:
+            data_subset.append(int(row[self.title]))
         avg = sum(data_subset) / len(data_subset)
 
         return avg

@@ -4,6 +4,7 @@
 CursMon by Christer Enfors © 2019
 """
 
+import csv
 import curses
 import time
 
@@ -20,21 +21,27 @@ class app(object):
 
         data = []
 
-        with open("input.txt", "r") as input_file:
-            for line in input_file:
-                num = int(line)
-                data.append(num)
+        with open("input.csv", "r") as csv_file:
+            csv_reader = csv.DictReader(csv_file)
+
+            for row in csv_reader:
+                data.append(row)
 
             self.ui.display_graph(data)
             self.ui.refresh()
 
             while True:
-                line = input_file.readline()
-                if line:
-                    data.append(int(line))
+                for row in csv_reader:
+                    data.append(row)
                     self.ui.display_graph(data)
                     self.ui.refresh()
                 time.sleep(0.1)
+            #     line = input_file.readline()
+            #     if line:
+            #         data.append(int(line))
+            #         self.ui.display_graph(data)
+            #         self.ui.refresh()
+            #     time.sleep(0.1)
 
 
 def main(scr):
