@@ -29,12 +29,14 @@ with open(file_name, mode="a") as csv_file:
     writer = csv.DictWriter(csv_file, fieldnames=field_names)
     if new_file:
         writer.writeheader()
-    while num < 200:
-        
+    while num < 2000:
+
         steady = random.randint(5, 9)
-        
+
         while steady > 0:
             val = val + direction
+            val += random.randint(-10, 10)
+            val += random.randint(-10, 10)
             if val > top:
                 val = top
             if val < bot:
@@ -45,6 +47,6 @@ with open(file_name, mode="a") as csv_file:
             writer.writerow({"datetime": datetime.datetime.now().isoformat(),
                              "loop_load": val})
             csv_file.flush()
-            time.sleep(60)
-            
+            time.sleep(4)
+
         direction = random.randint(-8, 8)
