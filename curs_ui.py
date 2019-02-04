@@ -37,16 +37,19 @@ class UI(object):
         self.main_graph = Graph(self.scr, "loop_load", top_graph_y=0,
                                 top_graph_x=0, plot_y_size=20,
                                 plot_x_size=plot_x_size, y_step=5,
-                                mv_avg_y=10, show_y=True, bar=True)
+                                mv_avg_y=7, show_mv_avg_y=True, bar=True)
         self.extra_graph = Graph(self.scr, "loop_load", top_graph_y=23,
                                  top_graph_x=0, plot_y_size=10,
-                                 plot_x_size=30, y_step=10)
+                                 plot_x_size=30, y_step=10,
+                                 show_y=False, show_mv_avg_y=True)
         self.third_graph = Graph(self.scr, "loop_load", top_graph_y=23,
                                  top_graph_x=40, plot_y_size=10,
-                                 plot_x_size=30, y_step=10)
+                                 plot_x_size=30, y_step=10,
+                                 bar=True)
         self.fourth_graph = Graph(self.scr, "loop_load", top_graph_y=36,
                                   top_graph_x=0, plot_y_size=10,
-                                  plot_x_size=30, y_step=10)
+                                  plot_x_size=30, y_step=10,
+                                  show_mv_avg_y=True)
         self.fifth_graph = Graph(self.scr, "loop_load", top_graph_y=36,
                                  top_graph_x=40, plot_y_size=10,
                                  plot_x_size=30, y_step=10)
@@ -68,8 +71,8 @@ class UI(object):
 
 class Graph(object):
     def __init__(self, scr, title, top_graph_y=0, top_graph_x=0,
-                 plot_y_size=10, plot_x_size=10, y_step=1, mv_avg_y=1,
-                 show_y=True, show_mv_avg_y=True, bar=False):
+                 plot_y_size=10, plot_x_size=10, y_step=1, mv_avg_y=7,
+                 show_y=True, show_mv_avg_y=False, bar=False):
         self.title = title
         self.scr = scr
         self.left_margin = 5
