@@ -21,6 +21,7 @@ class UI(object):
     def __init__(self, scr):
         self.lines = curses.LINES
         self.cols = curses.COLS
+        self.graphs = []
         curses.init_pair(WHITE, curses.COLOR_WHITE, curses.COLOR_BLACK)
         curses.init_pair(RED, curses.COLOR_RED, curses.COLOR_BLACK)
         curses.init_pair(BLUE, curses.COLOR_BLUE, curses.COLOR_BLACK)
@@ -32,38 +33,20 @@ class UI(object):
         self.scr.clear()
 
         # plot_x_size = self.cols - 5 - (self.cols % 5)
-        plot_x_size = 70
 
-        self.main_graph = Graph(self.scr, "loop_load", top_graph_y=0,
-                                top_graph_x=0, plot_y_size=20,
-                                plot_x_size=plot_x_size, y_step=5,
-                                mv_avg_y=7, show_mv_avg_y=True, bar=True)
-        self.extra_graph = Graph(self.scr, "loop_load", top_graph_y=23,
-                                 top_graph_x=0, plot_y_size=10,
-                                 plot_x_size=30, y_step=10,
-                                 show_y=False, show_mv_avg_y=True)
-        self.third_graph = Graph(self.scr, "loop_load", top_graph_y=23,
-                                 top_graph_x=40, plot_y_size=10,
-                                 plot_x_size=30, y_step=10,
-                                 bar=True)
-        self.fourth_graph = Graph(self.scr, "loop_load", top_graph_y=36,
-                                  top_graph_x=0, plot_y_size=10,
-                                  plot_x_size=30, y_step=10,
-                                  show_mv_avg_y=True)
-        self.fifth_graph = Graph(self.scr, "loop_load", top_graph_y=36,
-                                 top_graph_x=40, plot_y_size=10,
-                                 plot_x_size=30, y_step=10)
         self.scr.refresh()
 
-    def refresh(self):
+    def refresh(self, data):
+        self.lines = curses.LINES
+        self.cols = curses.COLS
+        self.display_graphs(data)
         self.scr.refresh()
 
-    def display_graph(self, data):
-        self.main_graph.display(data)
-        self.extra_graph.display(data)
-        self.third_graph.display(data)
-        self.fourth_graph.display(data)
-        self.fifth_graph.display(data)
+    def add_graph(self, graph):
+        self.graphs.append(graph)
+
+    def display_graphs(self, data):
+        [graph.display(data) for graph in self.graphs]
 
     def wait_for_input_char(self):
         return self.scr.getch()
