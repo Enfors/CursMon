@@ -165,7 +165,7 @@ class Graph(object):
     def draw_y_axis(self):
         for row in range(1, self.plot_y_size + 1):
             y = self.plot_y_size - row + self.top_margin + self.top_graph_y
-            x = self.left_margin - 4 + self.top_graph_x
+            x = self.left_margin - 5 + self.top_graph_x
 
             if row == self.plot_y_size:
                 char = "^"
@@ -175,9 +175,9 @@ class Graph(object):
                 else:
                     char = "|"
 
-            self.scr.addstr(y, x, "%3d" % (row * self.y_step),
+            self.scr.addstr(y, x, "%4d" % (row * self.y_step),
                             curses.color_pair(WHITE))
-            self.scr.addstr(y, x + 3, "%s" % char,
+            self.scr.addstr(y, x + 4, "%s" % char,
                             curses.color_pair(MAGENTA))
 
     def draw_x_axis(self):
